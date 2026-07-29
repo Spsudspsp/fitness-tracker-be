@@ -5,8 +5,8 @@ from utils.models import UUIDModel
 
 
 class Sex(models.TextChoices):
-    MALE = "M", "Male"
-    FEMALE = "F", "Female"
+    MALE = 'M', 'Male'
+    FEMALE = 'F', 'Female'
 
 
 class User(UUIDModel, AbstractUser):
@@ -28,13 +28,13 @@ class Profile(models.Model):
         null=True,
         blank=True,
     )
-    height = models.DecimalField( # cm
+    height = models.DecimalField(  # cm
         max_digits=5,
         decimal_places=2,
         null=True,
         blank=True,
     )
-    weight = models.DecimalField( # kg
+    weight = models.DecimalField(  # kg
         max_digits=6,
         decimal_places=2,
         null=True,
