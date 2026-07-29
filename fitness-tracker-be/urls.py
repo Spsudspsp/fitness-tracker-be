@@ -1,11 +1,11 @@
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import include, path
 from rest_framework import routers
-from workouts import views as workouts_views
+
 from exercises import views as exercises_views
 from memberships import views as memberships_views
 from nutrition import views as nutrition_views
-
+from workouts import views as workouts_views
 
 router = routers.DefaultRouter()
 

@@ -3,6 +3,7 @@ from django.db import models
 
 from utils.models import UUIDModel
 
+
 class MuscleGroup(models.TextChoices):
     CHEST = "chest", "Chest"
     BACK = "back", "Back"

@@ -1,6 +1,6 @@
 from rest_framework.viewsets import ReadOnlyModelViewSet
-from exercises import models
-from exercises import serializers
+
+from exercises import models, serializers
 
 
 class ExerciseListRetrieveView(ReadOnlyModelViewSet):

@@ -1,0 +1,17 @@
+line-length = 120
+extend-exclude = [
+    "*/migrations/*",
+]
+
+[lint]
+select = [
+    "E4",  # Import-related style errors
+    "E7",  # Statement-related errors
+    "E9",  # Runtime and syntax errors
+    "F",   # Pyflakes: undefined names, unused imports, etc.
+    "I",   # Import sorting
+]
+
+[format]
+quote-style = "single"
+indent-style = "space"

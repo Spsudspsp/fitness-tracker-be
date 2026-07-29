@@ -1,4 +1,4 @@
-from django.contrib.auth import get_user, get_user_model
+from django.contrib.auth import get_user_model
 from django.db import models
 
 from exercises.models import Exercise

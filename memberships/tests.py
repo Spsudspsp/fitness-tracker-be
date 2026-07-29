@@ -9,7 +9,6 @@ from rest_framework.test import APITestCase
 from memberships.models import Gym, Membership, MembershipStatus
 from memberships.serializers import MembershipSerializer
 
-
 User = get_user_model()
 
 

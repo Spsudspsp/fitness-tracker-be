@@ -1,7 +1,6 @@
-from rest_framework import viewsets, permissions
-from rest_framework.response import Response
+from rest_framework import viewsets
 
-from workouts import serializers, models
+from workouts import models, serializers
 
 
 class WorkoutViewSet(viewsets.ModelViewSet):

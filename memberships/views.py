@@ -4,6 +4,7 @@ from rest_framework.response import Response
 
 from memberships import models, serializers
 
+
 class GymViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = models.Gym.objects.all()
     serializer_class = serializers.GymSerializer

@@ -1,6 +1,5 @@
 from django.core.management import BaseCommand
 
-import exercises
 from exercises.models import Exercise
 
 EXERCISES = [

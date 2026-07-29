@@ -5,7 +5,7 @@ from rest_framework.relations import PrimaryKeyRelatedField
 from exercises.models import Exercise
 from exercises.serializers import ExerciseSerializer
 from workouts import models
-from workouts.models import Workout, WorkoutExercise, Program
+from workouts.models import Program, Workout
 
 
 class WorkoutExerciseSerializer(serializers.ModelSerializer):

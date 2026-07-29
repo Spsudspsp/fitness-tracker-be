@@ -6,7 +6,6 @@ from rest_framework.test import APITestCase
 from exercises.models import Equipment, Exercise, MuscleGroup
 from workouts.models import Day, Program, ProgramWorkout, Workout, WorkoutExercise
 
-
 User = get_user_model()
 
 
