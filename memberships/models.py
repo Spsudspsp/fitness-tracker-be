@@ -23,9 +23,9 @@ class Gym(UUIDModel):
 
 
 class MembershipStatus(models.TextChoices):
-    ACTIVE = ("active", "ACTIVE")
-    EXPIRED = ("expired", "EXPIRED")
-    CANCELED = ("canceled", "CANCELED")
+    ACTIVE = ('active', 'ACTIVE')
+    EXPIRED = ('expired', 'EXPIRED')
+    CANCELED = ('canceled', 'CANCELED')
 
 
 class Membership(UUIDModel):
@@ -44,12 +44,9 @@ class Membership(UUIDModel):
         constraints = [
             models.CheckConstraint(
                 condition=Q(status=MembershipStatus.ACTIVE) | Q(notify_at__isnull=True),
-                name='active_membership_requires_notify_at'
+                name='active_membership_requires_notify_at',
             ),
-            models.UniqueConstraint(
-                fields=['gym', 'user'],
-                name='unique_membership_gym_user'
-            )
+            models.UniqueConstraint(fields=['gym', 'user'], name='unique_membership_gym_user'),
         ]
 
     @property
@@ -76,12 +73,11 @@ class Membership(UUIDModel):
         if start_date is not None:
             self.start_date = start_date
         if self.is_active and self.expiration_date:
-
             expiration_date = self.get_expiration_date(self.expiration_date, duration_months)
         else:
             expiration_date = self.get_expiration_date(self.start_date, duration_months)
 
-        self.expiration_date =  expiration_date
+        self.expiration_date = expiration_date
         self.notify_at = self.get_notification_date(self.expiration_date)
         self.set_status_active()
 
@@ -96,4 +92,3 @@ class Membership(UUIDModel):
 
     def set_status_expired(self):
         self.status = MembershipStatus.EXPIRED
-

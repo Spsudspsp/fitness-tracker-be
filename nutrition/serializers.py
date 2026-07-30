@@ -16,6 +16,12 @@ class FoodItemSerializer(serializers.ModelSerializer):
         model = models.FoodItem
         fields = '__all__'
 
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        if self.context['view'].action != 'list':
+            data.pop('url')
+        return data
+
 
 class MealItemSerializer(serializers.ModelSerializer):
     food_item = serializers.PrimaryKeyRelatedField(queryset=FoodItem.objects.none(), write_only=True)
@@ -28,15 +34,14 @@ class MealItemSerializer(serializers.ModelSerializer):
         super().__init__(*args, **kwargs)
         request = self.context.get('request')
         if request and request.user.is_authenticated:
-            self.fields['food_item'].queryset = FoodItem.objects.filter(
-                Q(user__isnull=True) | Q(user=request.user)
-            )
+            self.fields['food_item'].queryset = FoodItem.objects.filter(Q(user__isnull=True) | Q(user=request.user))
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
         food_item = FoodItemSerializer(instance.food_item, context=self.context).data
         data['food_item'] = food_item
         return data
+
 
 class MealSerializer(serializers.ModelSerializer):
     ingredients = MealItemSerializer(many=True, source='mealitem_set', allow_empty=False)
@@ -51,9 +56,7 @@ class MealSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         ingredients_data = validated_data.pop('mealitem_set')
         meal = models.Meal.objects.create(**validated_data)
-        models.MealItem.objects.bulk_create(
-            [models.MealItem(meal=meal, **entry) for entry in ingredients_data]
-        )
+        models.MealItem.objects.bulk_create([models.MealItem(meal=meal, **entry) for entry in ingredients_data])
         return meal
 
     @transaction.atomic
@@ -65,8 +68,6 @@ class MealSerializer(serializers.ModelSerializer):
 
         if ingredients_data is not None:
             instance.mealitem_set.all().delete()
-            models.MealItem.objects.bulk_create(
-                [models.MealItem(meal=instance, **entry) for entry in ingredients_data]
-            )
+            models.MealItem.objects.bulk_create([models.MealItem(meal=instance, **entry) for entry in ingredients_data])
 
         return instance

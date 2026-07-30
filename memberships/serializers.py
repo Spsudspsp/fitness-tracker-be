@@ -8,7 +8,7 @@ class GymSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Gym
-        fields = "__all__"
+        fields = '__all__'
 
     def to_representation(self, obj):
         data = super().to_representation(obj)
@@ -23,7 +23,7 @@ class MembershipSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Membership
-        fields = "__all__"
+        fields = '__all__'
         read_only_fields = ('expiration_date', 'notify_at', 'status')
 
     def validate(self, attrs):
@@ -56,8 +56,10 @@ class MembershipSerializer(serializers.ModelSerializer):
         data['gym'] = GymSerializer(instance.gym, context=self.context).data
         return data
 
+
 class RenewMembershipSerializer(serializers.Serializer):
     duration_months = serializers.IntegerField(min_value=1)
+
 
 class CancelMembershipSerializer(serializers.Serializer):
     pass

@@ -33,11 +33,7 @@ class LoginSerializer(serializers.Serializer):
     password = serializers.CharField(write_only=True)
 
     def validate(self, data):
-        user = authenticate(
-            request=self.context.get('request'),
-            username=data['email'],
-            password=data['password']
-        )
+        user = authenticate(request=self.context.get('request'), username=data['email'], password=data['password'])
 
         if not user:
             raise serializers.ValidationError('Invalid credentials')
@@ -53,18 +49,19 @@ class ProfileSerializer(serializers.ModelSerializer):
         fields = ('display_name', 'sex', 'birth_date', 'height', 'weight')
         read_only_fields = ('id',)
 
+
 class UserSerializer(serializers.ModelSerializer):
     profile = ProfileSerializer()
 
     class Meta:
         model = User
         fields = (
-            "id",
-            "username",
-            "email",
-            "profile",
+            'id',
+            'username',
+            'email',
+            'profile',
         )
-        read_only_fields = ("id",)
+        read_only_fields = ('id',)
 
     def update(self, instance, validated_data):
         profile_data = validated_data.pop('profile')

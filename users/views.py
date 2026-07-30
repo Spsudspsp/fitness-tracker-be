@@ -6,6 +6,7 @@ from users import serializers
 
 User = get_user_model()
 
+
 class RegisterView(generics.CreateAPIView):
     serializer_class = serializers.RegisterSerializer
     permission_classes = (AllowAny,)

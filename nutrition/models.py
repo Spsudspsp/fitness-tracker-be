@@ -5,6 +5,7 @@ from utils.models import UUIDModel
 
 User = get_user_model()
 
+
 class FoodItem(UUIDModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=50)
@@ -23,12 +24,12 @@ class FoodItem(UUIDModel):
     def is_predefined(self):
         return self.user_id is None
 
+
 class Meal(UUIDModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=100)
-    ingredients = models.ManyToManyField(
-        FoodItem, through="MealItem", related_name="meals"
-    )
+    ingredients = models.ManyToManyField(FoodItem, through='MealItem', related_name='meals')
+
 
 class MealItem(models.Model):
     food_item = models.ForeignKey(FoodItem, on_delete=models.PROTECT)

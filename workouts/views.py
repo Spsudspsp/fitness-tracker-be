@@ -10,9 +10,12 @@ class WorkoutViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return self.queryset.filter(user=self.request.user).prefetch_related('workoutexercise_set__exercise')
 
+
 class ProgramViewSet(viewsets.ModelViewSet):
     queryset = models.Program.objects.all()
     serializer_class = serializers.ProgramSerializer
 
     def get_queryset(self):
-        return self.queryset.filter(user=self.request.user).prefetch_related('programworkout_set__workout__workoutexercise_set__exercise')
+        return self.queryset.filter(user=self.request.user).prefetch_related(
+            'programworkout_set__workout__workoutexercise_set__exercise'
+        )

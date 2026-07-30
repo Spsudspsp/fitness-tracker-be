@@ -22,7 +22,6 @@ class WorkoutExerciseSerializer(serializers.ModelSerializer):
         return data
 
 
-
 class WorkoutSerializer(serializers.ModelSerializer):
     exercises = WorkoutExerciseSerializer(many=True, allow_empty=False, source='workoutexercise_set')
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())

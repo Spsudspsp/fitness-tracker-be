@@ -9,6 +9,7 @@ class GymViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = models.Gym.objects.all()
     serializer_class = serializers.GymSerializer
 
+
 class MembershipViewSet(viewsets.ModelViewSet):
     queryset = models.Membership.objects.all()
     serializer_class = serializers.MembershipSerializer

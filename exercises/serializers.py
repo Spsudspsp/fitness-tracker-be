@@ -13,5 +13,5 @@ class ExerciseSerializer(serializers.ModelSerializer):
     def to_representation(self, obj):
         data = super().to_representation(obj)
         if self.context['view'].action == 'retrieve':
-           data.pop('url')
+            data.pop('url')
         return data
