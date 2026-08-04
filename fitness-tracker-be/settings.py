@@ -58,6 +58,8 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
+CELERY_BROKER_URL = config('CELERY_BROKER_URL')
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'corsheaders.middleware.CorsMiddleware',
@@ -128,6 +130,7 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
+CELERY_TIMEZONE = TIME_ZONE
 
 USE_I18N = True
 
