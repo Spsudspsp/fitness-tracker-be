@@ -7,6 +7,14 @@ from nutrition import models
 from nutrition.models import FoodItem
 
 
+class UserFoodItemRelatedField(serializers.PrimaryKeyRelatedField):
+    def get_queryset(self):
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            return FoodItem.objects.filter(Q(user=None) | Q(user=request.user))
+        return FoodItem.objects.none()
+
+
 class FoodItemSerializer(serializers.ModelSerializer):
     user = HiddenField(default=serializers.CurrentUserDefault())
     is_predefined = serializers.BooleanField(read_only=True)
@@ -24,17 +32,11 @@ class FoodItemSerializer(serializers.ModelSerializer):
 
 
 class MealItemSerializer(serializers.ModelSerializer):
-    food_item = serializers.PrimaryKeyRelatedField(queryset=FoodItem.objects.none(), write_only=True)
+    food_item = UserFoodItemRelatedField(write_only=True)
 
     class Meta:
         model = models.MealItem
         fields = ('food_item', 'quantity')
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        request = self.context.get('request')
-        if request and request.user.is_authenticated:
-            self.fields['food_item'].queryset = FoodItem.objects.filter(Q(user__isnull=True) | Q(user=request.user))
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
