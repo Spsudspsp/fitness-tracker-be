@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'workouts',
     'nutrition',
     'memberships',
+    'notifications',
 ]
 
 AUTH_USER_MODEL = 'users.User'
