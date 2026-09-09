@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'django_extensions',
     'django_filters',
+    'drf_spectacular',
     'corsheaders',
     'users',
     'exercises',
@@ -35,6 +36,7 @@ INSTALLED_APPS = [
     'nutrition',
     'memberships',
     'notifications',
+    'ai'
 ]
 
 AUTH_USER_MODEL = 'users.User'
@@ -48,6 +50,7 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': [
         'django_filters.rest_framework.DjangoFilterBackend',
     ],
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 SIMPLE_JWT = {
