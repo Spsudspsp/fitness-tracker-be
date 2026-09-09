@@ -55,5 +55,27 @@ services:
       timeout: 5s
       retries: 10
 
+  celery:
+    build:
+      context: .
+
+    command: celery -A fitness-tracker-be worker --loglevel=info
+
+    env_file:
+      - .env
+
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+
+    volumes:
+      - .:/app
+
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
 volumes:
   postgres_data:
