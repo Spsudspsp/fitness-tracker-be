@@ -8,7 +8,7 @@ from rest_framework.views import APIView
 from exercises.models import Exercise
 from exercises.serializers import ExerciseSerializer
 from workouts.models import WorkoutExercise, Workout, ProgramWorkout, Program
-
+from ai import serializers
 
 User = get_user_model()
 
@@ -18,18 +18,30 @@ class AITrainingPlanView(APIView):
 
     def post(self, request, *args, **kwargs):
         user = User.objects.select_related('profile').get(pk=request.user.pk)
-        self.generate_training_plan(user)
+
+        serializer = serializers.PlanRequestSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.data
+        data['user'] = user
+        data['ai_provider'] = self.request.POST.get('ai_provider', None)
+
+        self.generate_training_plan(data)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @transaction.atomic
-    def generate_training_plan(self, user):
+    def generate_training_plan(self, data):
+        user = data['user']
+        provider = data['ai_provider']
+        notes = data['notes']
+        goal_weight = data['goal_weight']
+
         req = dict(
-            provider='gemini',
-            age=user.profile.get_age(),
+            provider=provider,
+            age=data.profile.get_age(),
             weight_kg=float(user.profile.weight),
             height_cm=float(user.profile.height),
-            goal_weight=80,
-            notes='User is an inexperienced, untrained male. Goal should be achieved as fast as possible. Plan should be optimized for maximum efficiency.',
+            goal_weight=goal_weight,
+            notes=notes,
             experience_level='beginner',
             days_per_week=6,
             available_exercises=ExerciseSerializer(Exercise.objects.all(), many=True, context=dict(request=self.request)).data,
