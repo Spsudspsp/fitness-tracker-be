@@ -25,7 +25,6 @@ class WorkoutExerciseSerializer(serializers.ModelSerializer):
 class WorkoutSerializer(serializers.ModelSerializer):
     exercises = WorkoutExerciseSerializer(many=True, allow_empty=False, source='workoutexercise_set')
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
-    url = serializers.HyperlinkedIdentityField(view_name='workout-detail', read_only=True)
 
     class Meta:
         model = models.Workout
@@ -86,7 +85,6 @@ class ProgramWorkoutSerializer(serializers.ModelSerializer):
 class ProgramSerializer(serializers.ModelSerializer):
     workouts = ProgramWorkoutSerializer(many=True, source='programworkout_set', allow_empty=False)
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
-    url = serializers.HyperlinkedIdentityField(view_name='program-detail', read_only=True)
 
     class Meta:
         model = models.Program

@@ -4,17 +4,9 @@ from memberships import models
 
 
 class GymSerializer(serializers.ModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name='gym-detail', lookup_field='pk')
-
     class Meta:
         model = models.Gym
         fields = '__all__'
-
-    def to_representation(self, obj):
-        data = super().to_representation(obj)
-        if self.context['view'].action != 'list':
-            data.pop('url')
-        return data
 
 
 class MembershipSerializer(serializers.ModelSerializer):

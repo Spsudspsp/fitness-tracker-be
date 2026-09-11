@@ -18,17 +18,10 @@ class UserFoodItemRelatedField(serializers.PrimaryKeyRelatedField):
 class FoodItemSerializer(serializers.ModelSerializer):
     user = HiddenField(default=serializers.CurrentUserDefault())
     is_predefined = serializers.BooleanField(read_only=True)
-    url = serializers.HyperlinkedIdentityField(view_name='fooditem-detail', read_only=True)
 
     class Meta:
         model = models.FoodItem
         fields = '__all__'
-
-    def to_representation(self, instance):
-        data = super().to_representation(instance)
-        if self.context['view'].action != 'list':
-            data.pop('url')
-        return data
 
 
 class MealItemSerializer(serializers.ModelSerializer):
@@ -48,7 +41,6 @@ class MealItemSerializer(serializers.ModelSerializer):
 class MealSerializer(serializers.ModelSerializer):
     ingredients = MealItemSerializer(many=True, source='mealitem_set', allow_empty=False)
     user = HiddenField(default=serializers.CurrentUserDefault())
-    url = serializers.HyperlinkedIdentityField(view_name='meal-detail', read_only=True)
 
     class Meta:
         model = models.Meal

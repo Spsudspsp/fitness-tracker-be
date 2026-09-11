@@ -24,8 +24,6 @@ router.register('meals', nutrition_views.MealViewSet, basename='meal')
 
 router.register('notifications', notifications_views.NotificationViewSet, basename='notification')
 
-router.register('ai', ai_views.AIServiceViewSet, basename='ai')
-
 urlpatterns = [
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path(
@@ -39,4 +37,5 @@ urlpatterns = [
         'api-auth/',
         include('rest_framework.urls', namespace='rest_framework'),
     ),
+    path('ai/', include('ai.urls')),
 ] + router.urls
