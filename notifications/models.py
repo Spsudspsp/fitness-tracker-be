@@ -7,7 +7,7 @@ User = get_user_model()
 
 
 class UserNotificationPreference(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='notification_preference')
 
     membership_in_app = models.BooleanField(default=True)
 

@@ -5,6 +5,7 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.db.models import Q
 
+from memberships.signals import memberships_expired
 from utils.models import UUIDModel
 
 User = get_user_model()
@@ -28,6 +29,22 @@ class MembershipStatus(models.TextChoices):
     CANCELED = ('canceled', 'CANCELED')
 
 
+class MembershipQuerySet(models.QuerySet):
+    def active(self):
+        return self.filter(status=MembershipStatus.ACTIVE)
+
+    def expired(self):
+        return self.filter(status=MembershipStatus.EXPIRED)
+
+    def canceled(self):
+        return self.filter(status=MembershipStatus.CANCELED)
+
+    def expire(self):
+        expired = self.update(status=MembershipStatus.EXPIRED)
+        memberships_expired.send(sender=self.model, memberships=expired)
+        return expired
+
+
 class Membership(UUIDModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     gym = models.ForeignKey(Gym, on_delete=models.CASCADE)
@@ -48,6 +65,8 @@ class Membership(UUIDModel):
             ),
             models.UniqueConstraint(fields=['gym', 'user'], name='unique_membership_gym_user'),
         ]
+
+    objects = MembershipQuerySet.as_manager()
 
     @property
     def is_active(self):

@@ -1,5 +1,5 @@
 import requests
-from django.conf import settings
+from decouple import config
 from django.contrib.auth import get_user_model
 from django.db import transaction
 from rest_framework import status
@@ -14,7 +14,7 @@ User = get_user_model()
 
 
 class AITrainingPlanView(APIView):
-    TRAINING_PLAN_GENERATION_URL = f'{settings.AI_SERVICE_URL}/training_plans/generate'
+    TRAINING_PLAN_GENERATION_URL = f'{config('AI_SERVICE_URL')}/training_plans/generate'
 
     def post(self, request, *args, **kwargs):
         user = User.objects.select_related('profile').get(pk=request.user.pk)
@@ -50,7 +50,7 @@ class AITrainingPlanView(APIView):
         res = requests.post(
             self.TRAINING_PLAN_GENERATION_URL,
             json=req,
-            headers={'Content-Type': 'application/json', 'x-service-key': settings.AI_SERVICE_KEY},
+            headers={'Content-Type': 'application/json', 'x-service-key': config('AI_SERVICE_KEY')},
         )
         data = res.json()
 
