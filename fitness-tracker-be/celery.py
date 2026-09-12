@@ -20,6 +20,10 @@ app.conf.beat_schedule = {
     'expire-memberships-daily': {
         'task': 'memberships.tasks.expire_memberships',
         'schedule': crontab(hour=0, minute=0),
+    },
+    'membership-expiring-soon': {
+        'task': 'notifications.tasks.send_membership_expiring_soon_notification',
+        'schedule': crontab(hour=0, minute=10),
     }
 
 }

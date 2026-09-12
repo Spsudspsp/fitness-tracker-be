@@ -18,13 +18,13 @@ def create_user_notification_preference(sender, instance, created, **kwargs):
 def create_membership_expired_notification(sender, memberships, **kwargs):
     memberships = memberships.filter(
         user__notification_preference__membership_in_app=True
-    ).select_related('user', 'gym')
+    ).select_related('gym')
 
     notifications = []
 
     for membership in memberships:
         notification = Notification(
-            user=membership.user,
+            user=membership.user_id,
             type=NotificationCategory.MEMBERSHIP,
             title='Membership expired',
             content=f'Your membership at {membership.gym.name} has expired.',
