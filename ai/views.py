@@ -34,6 +34,7 @@ class AITrainingPlanView(APIView):
         provider = data['ai_provider']
         notes = data['notes']
         goal_weight = data['goal_weight']
+        days_per_week = data['days_per_week']
 
         req = dict(
             provider=provider,
@@ -43,7 +44,7 @@ class AITrainingPlanView(APIView):
             goal_weight=goal_weight,
             notes=notes,
             experience_level='beginner',
-            days_per_week=6,
+            days_per_week=days_per_week,
             available_exercises=ExerciseSerializer(Exercise.objects.all(), many=True, context=dict(request=self.request)).data,
         )
 
