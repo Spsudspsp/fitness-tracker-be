@@ -53,10 +53,16 @@ class AITrainingPlanView(APIView):
             json=req,
             headers={'Content-Type': 'application/json', 'x-service-key': config('AI_SERVICE_KEY')},
         )
-        data = res.json()
 
+        ai_data = res.json()
+        ai_data['user'] = user
+        self._create_plan(ai_data)
+
+    @staticmethod
+    def _create_plan(data):
         program_name = data['name']
         program_description = data['description']
+        user = data['user']
 
         program = Program.objects.create(
             user=user,
