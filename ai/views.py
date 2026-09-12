@@ -54,11 +54,13 @@ class AITrainingPlanView(APIView):
         )
         data = res.json()
 
-        # program_name = data['name']
-        # program_description = data['description']
+        program_name = data['name']
+        program_description = data['description']
 
         program = Program.objects.create(
             user=user,
+            name=program_name,
+            description=program_description,
         )
 
         workouts = data['workouts']
@@ -68,9 +70,10 @@ class AITrainingPlanView(APIView):
         workout_exercise_objs = []
 
         for workout in workouts:
-            # workout_name = workout['name']
+            workout_name = workout['name']
             workout_obj = Workout(
                 user=user,
+                name=workout_name,
             )
             workout_objs.append(workout_obj)
 

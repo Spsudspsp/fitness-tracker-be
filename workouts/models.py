@@ -9,6 +9,7 @@ User = get_user_model()
 
 class Workout(UUIDModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100, null=True, blank=True)
     exercises = models.ManyToManyField(Exercise, through='WorkoutExercise', related_name='workouts')
 
 
@@ -21,6 +22,8 @@ class WorkoutExercise(models.Model):
 
 class Program(UUIDModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100, null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
     workouts = models.ManyToManyField(Workout, through='ProgramWorkout', related_name='programs')
 
 
