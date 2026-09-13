@@ -3,11 +3,13 @@ from celery import shared_task
 from decouple import config
 from django.contrib.auth import get_user_model
 from django.db import transaction
-
-from ai.signals import training_program_generated
+from ai.signals import training_program_generation_succeeded, training_program_generation_failed
 from exercises.models import Exercise
 from exercises.serializers import ExerciseSerializer
 from workouts.models import WorkoutExercise, ProgramWorkout, Workout, Program
+import logging
+
+logger = logging.getLogger(__name__)
 
 TRAINING_PROGRAM_GENERATION_URL = f'{config('AI_SERVICE_URL')}/training_plans/generate'
 
@@ -15,8 +17,7 @@ User = get_user_model()
 
 @shared_task
 def generate_training_program(data):
-    provider = data['ai_provider']
-
+    provider = data['provider']
     user_id = data['user_id']
     user = User.objects.select_related('profile').get(pk=user_id)
     user_weight = float(user.profile.weight)
@@ -24,34 +25,49 @@ def generate_training_program(data):
     user_height = float(user.profile.height)
     user_age = user.profile.get_age()
     notes = data['notes']
+    experience_level = data['experience_level']
     days_per_week = data['days_per_week']
     available_exercises = ExerciseSerializer(Exercise.objects.all(), many=True).data
 
-    req = dict(
-        provider='gemini',
-        age=user_age,
-        weight_kg=user_weight,
-        height_cm=user_height,
-        goal_weight=goal_weight,
-        notes=notes,
-        # TODO implement experience levels
-        experience_level='beginner',
-        days_per_week=days_per_week,
-        available_exercises=available_exercises,
-    )
+    try:
+        req = dict(
+            provider=provider,
+            age=user_age,
+            weight_kg=user_weight,
+            height_cm=user_height,
+            goal_weight=goal_weight,
+            notes=notes,
+            # TODO implement experience levels
+            experience_level=experience_level,
+            days_per_week=days_per_week,
+            available_exercises=available_exercises,
+        )
 
-    res = requests.post(
-        TRAINING_PROGRAM_GENERATION_URL,
-        json=req,
-        headers={'Content-Type': 'application/json', 'x-service-key': config('AI_SERVICE_KEY')},
-        timeout=120
-    )
-    res.raise_for_status()
+        res = requests.post(
+            TRAINING_PROGRAM_GENERATION_URL,
+            json=req,
+            headers={'Content-Type': 'application/json', 'x-service-key': config('AI_SERVICE_KEY')},
+            timeout=120
+        )
+        res.raise_for_status()
 
-    ai_data = res.json()
-    program = create_training_program(user, ai_data)
+        ai_data = res.json()
+        program = create_training_program(user, ai_data)
 
-    training_program_generated.send(
+    except Exception as e:
+        logger.exception(
+            'Training program generation failed for user_id=%s: %s',
+            user_id,
+            e,
+        )
+
+        training_program_generation_failed.send(
+            sender=Program,
+            user=user
+        )
+        raise
+
+    training_program_generation_succeeded.send(
         sender=Program,
         user=user,
         program=program,

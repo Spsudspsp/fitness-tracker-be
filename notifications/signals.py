@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from ai.signals import training_program_generated
+from ai.signals import training_program_generation_succeeded, training_program_generation_failed
 from memberships.signals import memberships_expired
 from notifications.models import UserNotificationPreference, Notification, NotificationCategory
 
@@ -34,11 +34,20 @@ def create_membership_expired_notification(sender, memberships, **kwargs):
 
     Notification.objects.bulk_create(notifications)
 
-@receiver(training_program_generated)
-def create_training_program_generated_notification(sender, user, training_program, **kwargs):
+@receiver(training_program_generation_succeeded)
+def create_training_program_generation_success_notification(sender, user, program, **kwargs):
     Notification.objects.create(
         user=user,
         type=NotificationCategory.SYSTEM,
-        title='Training program',
-        content='Your training program has finished generating successfully.',
+        title='Training program generation done',
+        content=f"Your training program '{program.name}' has finished generating successfully.",
+    )
+
+@receiver(training_program_generation_failed)
+def create_training_program_generation_fail_notification(sender, user, **kwargs):
+    Notification.objects.create(
+        user=user,
+        type=NotificationCategory.SYSTEM,
+        title='Training program generation failed',
+        content='We could not generate your training program. Please try again later or attempt with a different AI provider.',
     )

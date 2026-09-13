@@ -15,8 +15,6 @@ class AITrainingProgramView(APIView):
 
         data = serializer.data
         data['user_id'] = request.user.id
-        data['ai_provider'] = self.request.POST.get('ai_provider', None)
-
         generate_training_program.delay(data)
 
         return Response(status=status.HTTP_204_NO_CONTENT)
