@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
+from ai.signals import training_program_generated
 from memberships.signals import memberships_expired
 from notifications.models import UserNotificationPreference, Notification, NotificationCategory
 
@@ -32,3 +33,12 @@ def create_membership_expired_notification(sender, memberships, **kwargs):
         notifications.append(notification)
 
     Notification.objects.bulk_create(notifications)
+
+@receiver(training_program_generated)
+def create_training_program_generated_notification(sender, user, training_program, **kwargs):
+    Notification.objects.create(
+        user=user,
+        type=NotificationCategory.SYSTEM,
+        title='Training program',
+        content='Your training program has finished generating successfully.',
+    )
