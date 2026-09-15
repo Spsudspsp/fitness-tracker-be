@@ -4,6 +4,7 @@ from rest_framework import generics
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -82,7 +83,10 @@ class CookieLogoutView(APIView):
         refresh_token = request.COOKIES.get('refresh_token')
 
         if refresh_token:
-            RefreshToken(refresh_token).blacklist()
+            try:
+                RefreshToken(refresh_token).blacklist()
+            except TokenError:
+                pass
 
         res = Response(dict(detail='Logout successful'))
 

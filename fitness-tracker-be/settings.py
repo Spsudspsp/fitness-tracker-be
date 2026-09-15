@@ -80,6 +80,7 @@ MIDDLEWARE = [
 
 CORS_ALLOWED_ORIGINS = config('CORS_ALLOWED_ORIGINS').split(',')
 CORS_ALLOW_CREDENTIALS = True
+CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS').split(',')
 
 ROOT_URLCONF = 'fitness-tracker-be.urls'
 
