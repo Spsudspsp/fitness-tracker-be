@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, logout
 from rest_framework import generics
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -87,6 +87,8 @@ class CookieLogoutView(APIView):
                 RefreshToken(refresh_token).blacklist()
             except TokenError:
                 pass
+
+        logout(request)
 
         res = Response(dict(detail='Logout successful'))
 
