@@ -60,13 +60,25 @@ The AI service runs separately and communicates with the backend over HTTP.
 
 Create a `.env` file containing the required application configuration.
 
-```bash
-cp .env-example .env
+```env
+SECRET_KEY=
+DEBUG=
+DB_NAME=
+DB_USER=
+DB_PASSWORD=
+DB_HOST=
+DB_PORT=
+ALLOWED_HOSTS=
+CORS_ALLOWED_ORIGINS=
+CSRF_TRUSTED_ORIGINS=
+CELERY_BROKER_URL=
+AI_SERVICE_URL=
+AI_SERVICE_KEY= (Used to authenticate requests to the AI service.)
+SESSION_COOKIE_SECURE=
+SESSION_COOKIE_SAMESITE=
 ```
 
 Configure the required database, Django, Redis, and service settings before starting the application.
-
-Do not commit secrets or production credentials to the repository.
 
 ## Running with Docker
 
@@ -119,10 +131,22 @@ The Docker environment runs the main application services, including:
 
 Running the backend outside Docker requires PostgreSQL and Redis to be available separately.
 
-Install dependencies:
+Create a virtual environment:
+
+```bash
+python -m venv .venv
+```
+
+Activate it and install dependencies:
 
 ```bash
 pip install -r requirements.txt
+```
+
+Create the environment file:
+
+```bash
+cp .env.example .env
 ```
 
 Apply database migrations:
