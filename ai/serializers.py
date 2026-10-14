@@ -5,5 +5,5 @@ class PlanRequestSerializer(serializers.Serializer):
     provider = serializers.CharField()
     experience_level = serializers.CharField()
     goal_weight = serializers.DecimalField(max_digits=5, decimal_places=2)
-    notes = serializers.CharField()
+    notes = serializers.CharField(max_length=2000)
     days_per_week = serializers.IntegerField(min_value=1, max_value=7)

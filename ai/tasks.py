@@ -15,39 +15,20 @@ TRAINING_PROGRAM_GENERATION_URL = f'{config('AI_SERVICE_URL')}/training_plans/ge
 
 User = get_user_model()
 
-@shared_task
+
+@shared_task(soft_time_limit=90, time_limit=120)
 def generate_training_program(data):
-    provider = data['provider']
-    user_id = data['user_id']
+    user_id = data.pop('user_id')
     user = User.objects.select_related('profile').get(pk=user_id)
-    user_weight = float(user.profile.weight)
-    goal_weight = float(data['goal_weight'])
-    user_height = float(user.profile.height)
-    user_age = user.profile.get_age()
-    notes = data['notes']
-    experience_level = data['experience_level']
-    days_per_week = data['days_per_week']
-    available_exercises = ExerciseSerializer(Exercise.objects.all(), many=True).data
 
     try:
-        req = dict(
-            provider=provider,
-            age=user_age,
-            weight_kg=user_weight,
-            height_cm=user_height,
-            goal_weight=goal_weight,
-            notes=notes,
-            # TODO implement experience levels
-            experience_level=experience_level,
-            days_per_week=days_per_week,
-            available_exercises=available_exercises,
-        )
+        processed_data = process_request_data(data, user)
 
         res = requests.post(
             TRAINING_PROGRAM_GENERATION_URL,
-            json=req,
+            json=processed_data,
             headers={'Content-Type': 'application/json', 'x-service-key': config('AI_SERVICE_KEY')},
-            timeout=120
+            timeout=(5, 60)
         )
         res.raise_for_status()
 
@@ -55,11 +36,12 @@ def generate_training_program(data):
         program = create_training_program(user, ai_data)
 
     except Exception as e:
-        logger.exception(
-            'Training program generation failed for user_id=%s: %s',
-            user_id,
-            e,
-        )
+        if isinstance(e, requests.Timeout):
+            msg = f'Training program generation timed out for user_id={user_id}: {e}'
+        else:
+            msg = f'Training program generation failed for user_id={user_id}: {e}'
+
+        logger.exception(msg)
 
         training_program_generation_failed.send(
             sender=Program,
@@ -72,6 +54,17 @@ def generate_training_program(data):
         user=user,
         program=program,
     )
+
+
+def process_request_data(data, user):
+    data['user_weight'] = float(user.profile.weight)
+    data['goal_weight'] = float(data['goal_weight'])
+    data['user_height'] = float(user.profile.height)
+    data['user_age'] = user.profile.get_age()
+    data['available_exercises'] = ExerciseSerializer(Exercise.objects.all(), many=True).data
+
+    return data
+
 
 @transaction.atomic
 def create_training_program(user, data):
