@@ -1,9 +1,7 @@
 import uuid
-from django.contrib.auth import get_user_model
+
+from django.conf import settings
 from django.db import models
-
-
-User = get_user_model()
 
 
 class UUIDModel(models.Model):
@@ -14,7 +12,7 @@ class UUIDModel(models.Model):
 
 
 class Usage(UUIDModel):
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
     used = models.IntegerField(default=0)
 
     created_at = models.DateTimeField(auto_now_add=True)
